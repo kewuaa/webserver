@@ -68,12 +68,14 @@ TARGET_LINK_LIBRARIES(
         asyncio
         magic_enum
 )
+TARGET_COMPILE_DEFINITIONS(
+    webserver
+    PRIVATE RESOURCE_ROOT_DIR="${CMAKE_SOURCE_DIR}/resources"
+)
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
     TARGET_COMPILE_DEFINITIONS(
         webserver
-        PRIVATE
-            SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG
-            RESOURCE_ROOT_DIR="${CMAKE_SOURCE_DIR}/resources"
+        PRIVATE SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG
     )
 endif()
 
