@@ -22,7 +22,7 @@ namespace http::response {
         auto file_size = fs::file_size(file);
         make_status_line(buf, code);
         buf.write("Connection: keep-alive" CRLF);
-        buf.write("Keep-Alive: timeout={}", CONNECTION_TIMEOUT / 1000);
+        buf.write("Keep-Alive: timeout={}" CRLF, CONNECTION_TIMEOUT / 1000);
         buf.write(
             "Content-Type: {}; charset=utf-8" CRLF,
             get_content_type(file)
@@ -41,7 +41,7 @@ namespace http::response {
     void make_response_list_dir(Buffer &buf, std::string_view dir) noexcept {
         make_status_line(buf, StatusCode::OK);
         buf.write("Connection: keep-alive" CRLF);
-        buf.write("Keep-Alive: timeout={}", CONNECTION_TIMEOUT / 1000);
+        buf.write("Keep-Alive: timeout={}" CRLF, CONNECTION_TIMEOUT / 1000);
         buf.write("Content-Type: text/html; charset=utf-8" CRLF);
 
         {
