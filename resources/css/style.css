@@ -1,0 +1,40 @@
+hl {
+    font-weight: bold;
+    font-size: 2em;
+}
+
+/* 设置列表样式 */
+ul {
+    list-style-type: none; /* 去掉默认的列表符号 */
+    padding: 0;
+    border: 1px solid #ccc; /* 添加边框 */
+}
+
+/* 设置列表项样式 */
+li {
+    display: flex; /* 使用 Flexbox 布局 */
+    justify-content: space-between; /* 内容左右对齐 */
+    align-items: center; /* 垂直居中 */
+    padding: 10px;
+    border-bottom: 1px solid #ccc; /* 添加分隔线 */
+}
+
+/* 最后一个列表项去掉底部边框 */
+li:last-child {
+    border-bottom: none;
+}
+
+/* 设置按钮样式 */
+button {
+    background-color: #007bff; /* 蓝色背景 */
+    color: white; /* 白色文字 */
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px; /* 圆角 */
+}
+
+/* 鼠标悬停时改变按钮颜色 */
+button:hover {
+    background-color: #0056b3;
+}

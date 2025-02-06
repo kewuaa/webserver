@@ -1,0 +1,20 @@
+ADD_EXECUTABLE(test_buffer)
+TARGET_INCLUDE_DIRECTORIES(
+    test_buffer
+    PRIVATE
+        ../include
+        ${CMAKE_BINARY_DIR}/include
+)
+TARGET_SOURCES(
+    test_buffer
+    PRIVATE
+        ../src/buffer.cpp
+        test_buffer.cpp
+)
+TARGET_LINK_LIBRARIES(
+    test_buffer
+    PRIVATE
+        Boost::ut
+        spdlog::spdlog
+)
+ADD_TEST(NAME test_buffer COMMAND $<TARGET_FILE:test_buffer>)

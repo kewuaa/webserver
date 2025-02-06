@@ -1,0 +1,3 @@
+#pragma once
+#define BUFFER_SIZE ${BUFFER_SIZE}
+#define CONNECTION_TIMEOUT ${CONNECTION_TIMEOUT}
