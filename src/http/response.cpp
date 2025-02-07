@@ -14,6 +14,16 @@ namespace http::response {
         );
     }
 
+    static void make_keep_alive_header(Buffer& buf, bool keep_alive) noexcept {
+        if (keep_alive) {
+            constexpr auto timeout = CONNECTION_TIMEOUT / 1000;
+            buf.write("Connection: keep-alive" CRLF);
+            buf.write("Keep-Alive: timeout={}" CRLF, timeout);
+        } else {
+            buf.write("Connection: close" CRLF);
+        }
+    }
+
     void make_response_get_file(
         Buffer& buf,
         std::string_view file,
@@ -21,8 +31,7 @@ namespace http::response {
     ) noexcept {
         auto file_size = fs::file_size(file);
         make_status_line(buf, code);
-        buf.write("Connection: keep-alive" CRLF);
-        buf.write("Keep-Alive: timeout={}" CRLF, CONNECTION_TIMEOUT / 1000);
+        make_keep_alive_header(buf, true);
         buf.write(
             "Content-Type: {}; charset=utf-8" CRLF,
             get_content_type(file)
@@ -40,8 +49,7 @@ namespace http::response {
 
     void make_response_list_dir(Buffer &buf, std::string_view dir) noexcept {
         make_status_line(buf, StatusCode::OK);
-        buf.write("Connection: keep-alive" CRLF);
-        buf.write("Keep-Alive: timeout={}" CRLF, CONNECTION_TIMEOUT / 1000);
+        make_keep_alive_header(buf, true);
         buf.write("Content-Type: text/html; charset=utf-8" CRLF);
 
         {
@@ -110,7 +118,7 @@ namespace http::response {
     void make_response_download_file(Buffer &buf, std::string_view file) noexcept {
         auto file_size = fs::file_size(file);
         make_status_line(buf, StatusCode::OK);
-        buf.write("Connection: close" CRLF);
+        make_keep_alive_header(buf, true);
         buf.write("Content-Type: application/octet-stream" CRLF);
 
         buf.write("content-length: {}" CRLF CRLF, file_size);
