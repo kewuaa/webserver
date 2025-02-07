@@ -7,8 +7,6 @@ using namespace kwa;
 
 
 namespace http::response {
-    constexpr const char* PAGE_FMT = "";
-
     constexpr const char* get_content_type(std::string_view file) noexcept {
         const char* type = "text/plain";
         auto dot_pos = file.rfind('.');
