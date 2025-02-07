@@ -68,7 +68,7 @@ namespace http::response {
                 "<link rel=\"stylesheet\" href=\"/css/style.css\">" CRLF
                 "</head>" CRLF
                 "<body>" CRLF
-                "<hl>Directory list for {}</hl>" CRLF
+                "<h1>Directory list for {}</h1>" CRLF
                 "<hr>" CRLF
                 "<ul>" CRLF, dir, dir
             );
