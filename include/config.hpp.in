@@ -1,3 +1,6 @@
 #pragma once
-#define BUFFER_SIZE ${BUFFER_SIZE}
-#define CONNECTION_TIMEOUT ${CONNECTION_TIMEOUT}
+#include <cstddef>
+
+
+constexpr inline size_t BUFFER_SIZE = ${BUFFER_SIZE};
+constexpr inline size_t CONNECTION_TIMEOUT = ${CONNECTION_TIMEOUT};
