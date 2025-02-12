@@ -3,4 +3,5 @@
 
 
 constexpr inline size_t BUFFER_SIZE = ${BUFFER_SIZE};
+constexpr inline size_t MAX_DATA_SEND_ONCE = ${MAX_DATA_SEND_ONCE};
 constexpr inline size_t CONNECTION_TIMEOUT = ${CONNECTION_TIMEOUT};

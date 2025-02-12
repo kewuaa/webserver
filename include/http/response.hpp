@@ -52,7 +52,7 @@ namespace http::response {
         return type;
     }
 
-    void make_response_get_file(Buffer& buf, std::string_view file, StatusCode code) noexcept;
-    void make_response_list_dir(Buffer& buf, std::string_view dir) noexcept;
-    void make_response_download_file(Buffer& buf, std::string_view file) noexcept;
+    asyncio::Task<> make_response_get_file(asyncio::Socket& sock, Buffer& buf, std::string_view file, StatusCode code) noexcept;
+    asyncio::Task<> make_response_list_dir(asyncio::Socket& sock, Buffer& buf, std::string_view dir) noexcept;
+    asyncio::Task<> make_response_download_file(asyncio::Socket& sock, Buffer& buf, std::string_view file) noexcept;
 }

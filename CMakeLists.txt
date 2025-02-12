@@ -12,6 +12,7 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb")
 SET(BUILD_TESTS TRUE CACHE BOOL "if to build tests")
 
 SET(BUFFER_SIZE 1024 CACHE STRING "size of buffer")
+SET(MAX_DATA_SEND_ONCE 2048 CACHE STRING "max data size could send once")
 SET(CONNECTION_TIMEOUT 300000 CACHE STRING "timeout for connection to close(milliseconds)")
 
 if (NOT CMAKE_BUILD_TYPE)

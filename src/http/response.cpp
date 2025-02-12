@@ -24,7 +24,8 @@ namespace http::response {
         }
     }
 
-    void make_response_get_file(
+    asyncio::Task<> make_response_get_file(
+        asyncio::Socket& sock,
         Buffer& buf,
         std::string_view file,
         StatusCode code
@@ -39,15 +40,25 @@ namespace http::response {
 
         buf.write("content-length: {}" CRLF CRLF, file_size);
         {
-            auto view = buf.malloc(file_size);
             std::ifstream f;
             f.open(file.data(), std::ios::binary);
-            f.read(view.data(), view.size());
+            while (file_size > 0) {
+                auto size = std::min(MAX_DATA_SEND_ONCE, file_size);
+                auto view = buf.malloc(size);
+                f.read(view.data(), view.size());
+                file_size -= size;
+                auto data = buf.read_all();
+                co_await sock.write(data.data(), data.size());
+            }
             f.close();
         }
     }
 
-    void make_response_list_dir(Buffer &buf, std::string_view dir) noexcept {
+    asyncio::Task<> make_response_list_dir(
+        asyncio::Socket& sock,
+        Buffer &buf,
+        std::string_view dir
+    ) noexcept {
         make_status_line(buf, StatusCode::OK);
         make_keep_alive_header(buf, true);
         buf.write("Content-Type: text/html; charset=utf-8" CRLF);
@@ -113,9 +124,11 @@ namespace http::response {
                 length_view.data()
             );
         }
+        auto data = buf.read_all();
+        co_await sock.write(data.data(), data.size());
     }
 
-    void make_response_download_file(Buffer &buf, std::string_view file) noexcept {
+    asyncio::Task<> make_response_download_file(asyncio::Socket& sock, Buffer &buf, std::string_view file) noexcept {
         auto file_size = fs::file_size(file);
         make_status_line(buf, StatusCode::OK);
         make_keep_alive_header(buf, true);
@@ -123,10 +136,16 @@ namespace http::response {
 
         buf.write("content-length: {}" CRLF CRLF, file_size);
         {
-            auto view = buf.malloc(file_size);
             std::ifstream f;
             f.open(file.data(), std::ios::binary);
-            f.read(view.data(), view.size());
+            while (file_size > 0) {
+                auto size = std::min(MAX_DATA_SEND_ONCE, file_size);
+                auto view = buf.malloc(size);
+                f.read(view.data(), view.size());
+                file_size -= size;
+                auto data = buf.read_all();
+                co_await sock.write(data.data(), data.size());
+            }
             f.close();
         }
     }

@@ -50,7 +50,8 @@ namespace http {
             while (req.has_data()) {
                 if (auto data = req.get(); data) {
                     if (!data->valid) {
-                        response::make_response_get_file(
+                        co_await response::make_response_get_file(
+                            sock,
                             buf,
                             RESOURCE_ROOT_DIR"/400.html",
                             StatusCode::BAD_REQUEST
@@ -68,38 +69,44 @@ namespace http {
 
                         if (data->method == Method::GET) {
                             if (data->path == "/") {
-                                response::make_response_list_dir(
+                                co_await response::make_response_list_dir(
+                                    sock,
                                     buf,
                                     fs::current_path().c_str()
                                 );
                             } else if (data->path == "/list") {
                                 if (!data->params.contains("cwd") or !fs::is_directory(data->params["cwd"])) {
-                                    response::make_response_get_file(
+                                    co_await response::make_response_get_file(
+                                        sock,
                                         buf,
                                         RESOURCE_ROOT_DIR"/404.html",
                                         StatusCode::NOT_FOUND
                                     );
                                 } else {
-                                    response::make_response_list_dir(
+                                    co_await response::make_response_list_dir(
+                                        sock,
                                         buf,
                                         data->params["cwd"]
                                     );
                                 }
                             } else if (data->path == "/view" or data->path == "/download") {
                                 if (!data->params.contains("file") or !fs::exists(data->params["file"])) {
-                                    response::make_response_get_file(
+                                    co_await response::make_response_get_file(
+                                        sock,
                                         buf,
                                         RESOURCE_ROOT_DIR"/404.html",
                                         StatusCode::NOT_FOUND
                                     );
                                 } else {
                                     if (data->path == "/download") {
-                                        response::make_response_download_file(
+                                        co_await response::make_response_download_file(
+                                            sock,
                                             buf,
                                             data->params["file"]
                                         );
                                     } else {
-                                        response::make_response_get_file(
+                                        co_await response::make_response_get_file(
+                                            sock,
                                             buf,
                                             data->params["file"],
                                             StatusCode::OK
@@ -119,7 +126,12 @@ namespace http {
                                         code = StatusCode::NOT_FOUND;
                                     }
                                 }
-                                response::make_response_get_file(buf, file, code);
+                                co_await response::make_response_get_file(
+                                    sock,
+                                    buf,
+                                    file,
+                                    code
+                                );
                             }
                         }
                     }
