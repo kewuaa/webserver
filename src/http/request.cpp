@@ -5,6 +5,7 @@
 
 namespace http {
     Request::Data::Data(Data&& data) noexcept:
+        valid(data.valid),
         method(data.method),
         path(std::move(data.path)),
         params(std::move(data.params)),
@@ -16,6 +17,7 @@ namespace http {
     }
 
     Request::Data& Request::Data::operator=(Data&& data) noexcept {
+        valid = data.valid;
         method = data.method;
         path = std::move(data.path);
         params = std::move(data.params);
