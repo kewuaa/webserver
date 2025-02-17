@@ -100,7 +100,7 @@ namespace http::response {
                     buf.write(
                         "<li>" CRLF
                         "<a href=\"/view?file={}\">{}</a>" CRLF
-                        "<button value=\"{}\" id=\"download_button\">download</button>" CRLF
+                        "<button value=\"{}\" class=\"download_button\">download</button>" CRLF
                         "</li>" CRLF,
                         entry.path().c_str(),
                         entry.path().c_str(),

@@ -1,6 +1,7 @@
-document
-    .getElementById("download_button")
-    .addEventListener(
+let download_buttons = document.getElementsByClassName("download_button");
+for (let i = 0; i < download_buttons.length; i++) {
+    let button = download_buttons[i];
+    button.addEventListener(
         "click",
         function(event) {
             const link = document.createElement("a")
@@ -13,3 +14,4 @@ document
             document.body.removeChild(link)
         }
     )
+}
