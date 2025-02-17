@@ -10,6 +10,6 @@ document
             document.body.append(link)
             link.click()
 
-            document.removeChild(link)
+            document.body.removeChild(link)
         }
     )
