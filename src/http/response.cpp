@@ -92,9 +92,9 @@ namespace http::response {
             for (auto& entry : fs::directory_iterator(path)) {
                 if (entry.is_directory()) {
                     buf.write(
-                        "<li><a href=\"/list?cwd={}\">{}</a></li>" CRLF,
+                        "<li><a href=\"/list?cwd={}\">{}/</a></li>" CRLF,
                         entry.path().c_str(),
-                        entry.path().c_str()
+                        entry.path().stem().c_str()
                     );
                 } else {
                     buf.write(
@@ -103,7 +103,7 @@ namespace http::response {
                         "<button value=\"{}\" class=\"download_button\">download</button>" CRLF
                         "</li>" CRLF,
                         entry.path().c_str(),
-                        entry.path().c_str(),
+                        entry.path().filename().c_str(),
                         entry.path().c_str()
                     );
                 }
