@@ -1,5 +1,6 @@
 #include <spdlog/spdlog.h>
 
+#include "utils.hpp"
 #include "http/request.hpp"
 
 
@@ -97,11 +98,11 @@ namespace http {
                 }
                 auto pair = params.substr(pos, split-pos);
                 auto equal_pos = pair.find('=');
-                _data.params[std::string(pair.substr(0, equal_pos))] = pair.substr(equal_pos+1);
+                _data.params[std::string(pair.substr(0, equal_pos))] = url_decode(pair.substr(equal_pos+1));
                 pos = split + 1;
             }
         }
-        _data.path = path;
+        _data.path = url_decode(path);
         _data.version = line.substr(space2+1);
         _move_next_state();
     }
