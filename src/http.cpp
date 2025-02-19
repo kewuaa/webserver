@@ -9,6 +9,74 @@ namespace fs = std::filesystem;;
 namespace http {
     using namespace std::chrono;
 
+    static asyncio::Task<> handle_GET(asyncio::Socket& sock, Buffer& buf, Request::Data& data) noexcept {
+        if (data.path == "/") {
+            co_await response::make_response_list_dir(
+                sock,
+                buf,
+                fs::current_path().c_str()
+            );
+        } else if (data.path == "/list") {
+            if (!data.params.contains("cwd") or !fs::is_directory(data.params["cwd"])) {
+                co_await response::make_response_get_file(
+                    sock,
+                    buf,
+                    RESOURCE_ROOT_DIR"/404.html",
+                    StatusCode::NOT_FOUND
+                );
+            } else {
+                co_await response::make_response_list_dir(
+                    sock,
+                    buf,
+                    data.params["cwd"]
+                );
+            }
+        } else if (data.path == "/view" or data.path == "/download") {
+            if (!data.params.contains("file") or !fs::exists(data.params["file"])) {
+                co_await response::make_response_get_file(
+                    sock,
+                    buf,
+                    RESOURCE_ROOT_DIR"/404.html",
+                    StatusCode::NOT_FOUND
+                );
+            } else {
+                if (data.path == "/download") {
+                    co_await response::make_response_download_file(
+                        sock,
+                        buf,
+                        data.params["file"]
+                    );
+                } else {
+                    co_await response::make_response_get_file(
+                        sock,
+                        buf,
+                        data.params["file"],
+                        StatusCode::OK
+                    );
+                }
+            }
+        } else {
+            StatusCode code { StatusCode::OK };
+            std::string file = RESOURCE_ROOT_DIR;
+            file.append(data.path);
+            if (!fs::exists(file)) {
+                if (fs::is_directory(file)) {
+                    file = RESOURCE_ROOT_DIR"/400.html";
+                    code = StatusCode::BAD_REQUEST;
+                } else {
+                    file = RESOURCE_ROOT_DIR"/404.html";
+                    code = StatusCode::NOT_FOUND;
+                }
+            }
+            co_await response::make_response_get_file(
+                sock,
+                buf,
+                file,
+                code
+            );
+        }
+    }
+
     asyncio::Task<> init_connection(int conn) noexcept {
         bool closed = false;
         auto close_connection = [&closed] {
@@ -56,84 +124,20 @@ namespace http {
                             RESOURCE_ROOT_DIR"/400.html",
                             StatusCode::BAD_REQUEST
                         );
-                    } else {
-                        SPDLOG_DEBUG("method: {}", data->method_str());
-                        SPDLOG_DEBUG("path: {}", data->path);
-                        for (auto& [key, value] : data->params) {
-                            SPDLOG_DEBUG("{} -> {}", key, value);
-                        }
-                        SPDLOG_DEBUG("version: {}", data->version);
-                        for (auto& [key, value] : data->headers) {
-                            SPDLOG_DEBUG("{} -> {}", key, value);
-                        }
+                        continue;
+                    }
+                    SPDLOG_DEBUG("method: {}", data->method_str());
+                    SPDLOG_DEBUG("path: {}", data->path);
+                    for (auto& [key, value] : data->params) {
+                        SPDLOG_DEBUG("{} -> {}", key, value);
+                    }
+                    SPDLOG_DEBUG("version: {}", data->version);
+                    for (auto& [key, value] : data->headers) {
+                        SPDLOG_DEBUG("{} -> {}", key, value);
+                    }
 
-                        if (data->method == Method::GET) {
-                            if (data->path == "/") {
-                                co_await response::make_response_list_dir(
-                                    sock,
-                                    buf,
-                                    fs::current_path().c_str()
-                                );
-                            } else if (data->path == "/list") {
-                                if (!data->params.contains("cwd") or !fs::is_directory(data->params["cwd"])) {
-                                    co_await response::make_response_get_file(
-                                        sock,
-                                        buf,
-                                        RESOURCE_ROOT_DIR"/404.html",
-                                        StatusCode::NOT_FOUND
-                                    );
-                                } else {
-                                    co_await response::make_response_list_dir(
-                                        sock,
-                                        buf,
-                                        data->params["cwd"]
-                                    );
-                                }
-                            } else if (data->path == "/view" or data->path == "/download") {
-                                if (!data->params.contains("file") or !fs::exists(data->params["file"])) {
-                                    co_await response::make_response_get_file(
-                                        sock,
-                                        buf,
-                                        RESOURCE_ROOT_DIR"/404.html",
-                                        StatusCode::NOT_FOUND
-                                    );
-                                } else {
-                                    if (data->path == "/download") {
-                                        co_await response::make_response_download_file(
-                                            sock,
-                                            buf,
-                                            data->params["file"]
-                                        );
-                                    } else {
-                                        co_await response::make_response_get_file(
-                                            sock,
-                                            buf,
-                                            data->params["file"],
-                                            StatusCode::OK
-                                        );
-                                    }
-                                }
-                            } else {
-                                StatusCode code { StatusCode::OK };
-                                std::string file = RESOURCE_ROOT_DIR;
-                                file.append(data->path);
-                                if (!fs::exists(file)) {
-                                    if (fs::is_directory(file)) {
-                                        file = RESOURCE_ROOT_DIR"/400.html";
-                                        code = StatusCode::BAD_REQUEST;
-                                    } else {
-                                        file = RESOURCE_ROOT_DIR"/404.html";
-                                        code = StatusCode::NOT_FOUND;
-                                    }
-                                }
-                                co_await response::make_response_get_file(
-                                    sock,
-                                    buf,
-                                    file,
-                                    code
-                                );
-                            }
-                        }
+                    if (data->method == Method::GET) {
+                        co_await handle_GET(sock, buf, *data);
                     }
                 }
             }
