@@ -135,9 +135,6 @@ namespace http {
                             }
                         }
                     }
-                    auto view = buf.read_all();
-                    SPDLOG_DEBUG("send {} bytes data:\n{}", view.size(), view);
-                    co_await sock.write(view.data(), view.size());
                 }
             }
         }
