@@ -24,6 +24,16 @@ namespace http::response {
         }
     }
 
+    asyncio::Task<> make_response_plaintext(asyncio::Socket &sock, Buffer &buf, std::string_view text) noexcept {
+        make_status_line(buf, StatusCode::BAD_REQUEST);
+        make_keep_alive_header(buf, true);
+        buf.write("Content-Type: text/plain; charset=utf-8" CRLF);
+        buf.write("Content-Length: {}" CRLF CRLF, text.size());
+        buf.write(text);
+        auto data = buf.read_all();
+        co_await sock.write(data.data(), data.size());
+    }
+
     asyncio::Task<> make_response_get_file(
         asyncio::Socket& sock,
         Buffer& buf,
