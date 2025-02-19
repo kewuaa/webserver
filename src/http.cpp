@@ -138,6 +138,12 @@ namespace http {
 
                     if (data->method == Method::GET) {
                         co_await handle_GET(sock, buf, *data);
+                    } else {
+                        co_await response::make_response_plaintext(
+                            sock,
+                            buf,
+                            std::format("Unsupported method `{}`", data->method_str())
+                        );
                     }
                 }
             }
