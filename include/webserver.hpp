@@ -1,18 +1,11 @@
 #pragma once
-#include <list>
-
 #include "asyncio.hpp"
-
-#include "http.hpp"
 using namespace kwa;
 
 
 class WebServer {
     private:
         asyncio::Socket _sock {};
-        std::list<asyncio::Task<>> _conns {};
-
-        void _handle_connection(int conn) noexcept;
     public:
         WebServer() noexcept = default;
         WebServer(WebServer&) = delete;
