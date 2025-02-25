@@ -55,6 +55,7 @@ namespace http::response {
     }
 
     asyncio::Task<> make_response_error_text(asyncio::Socket& sock, Buffer& buf, std::string_view text) noexcept;
+    asyncio::Task<> make_response_json(asyncio::Socket& sock, Buffer& buf, std::string_view error_msg) noexcept;
     asyncio::Task<> make_response_get_file(asyncio::Socket& sock, Buffer& buf, std::string_view file, StatusCode code) noexcept;
     asyncio::Task<> make_response_list_dir(asyncio::Socket& sock, Buffer& buf, std::string_view dir) noexcept;
     asyncio::Task<> make_response_download_file(asyncio::Socket& sock, Buffer& buf, std::string_view file) noexcept;

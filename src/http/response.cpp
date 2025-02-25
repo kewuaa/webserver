@@ -34,6 +34,17 @@ namespace http::response {
         co_await sock.write(data.data(), data.size());
     }
 
+    asyncio::Task<> make_response_json(asyncio::Socket &sock, Buffer &buf, std::string_view error_msg) noexcept {
+        make_status_line(buf, StatusCode::OK);
+        make_keep_alive_header(buf, true);
+        auto content = "{" + std::format("\"status\": {}, \"error_msg\": \"{}\"", (int)!error_msg.empty(), error_msg) + "}";
+        buf.write("Content-Type: application/json; charset=utf-8" CRLF);
+        buf.write("Content-Length: {}" CRLF CRLF, content.size());
+        buf.write(content);
+        auto data = buf.read_all();
+        co_await sock.write(data.data(), data.size());
+    }
+
     asyncio::Task<> make_response_get_file(
         asyncio::Socket& sock,
         Buffer& buf,
