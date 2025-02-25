@@ -51,6 +51,8 @@ TARGET_SOURCES(
     PRIVATE
         src/buffer.cpp
         src/http/request.cpp
+        src/http/request/parser.cpp
+        src/http/request/handler.cpp
         src/http/response.cpp
         src/http.cpp
         src/webserver.cpp
