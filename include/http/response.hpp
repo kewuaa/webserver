@@ -28,6 +28,8 @@ namespace http::response {
             type = "image/png";
         } else if (suffix == ".gif") {
             type = "image/gif";
+        } else if (suffix == ".svg") {
+            type = "image/svg+xml";
         } else if (suffix == ".jpg" or suffix == ".jpeg") {
             type = "image/jpg";
         } else if (suffix == ".mpg" or suffix == ".mpeg") {
