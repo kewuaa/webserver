@@ -102,8 +102,12 @@ namespace http::response {
                 "</head>" CRLF
                 "<body>" CRLF
                 "<h1>Directory list for {}</h1>" CRLF
+                "<form method=\"POST\" id=\"uploadForm\" enctype=\"multipart/form-data\">" CRLF
+                "<input type=\"file\" id=\"file_input\">" CRLF
+                "<button type=\"button\" value=\"{}\" id=\"upload_button\">upload</button>" CRLF
+                "</form>" CRLF
                 "<hr>" CRLF
-                "<ul>" CRLF, dir, dir
+                "<ul>" CRLF, dir, dir, dir
             );
 
             fs::path path { dir };
