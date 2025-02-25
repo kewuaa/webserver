@@ -97,6 +97,7 @@ namespace http::response {
                 "<meta charset=\"UTF-8\">" CRLF
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" CRLF
                 "<title>Dirctory list for {}</title>" CRLF
+                "<link rel=\"icon\" type=\"image/svg+xml\" href=\"/favicon.svg\">" CRLF
                 "<link rel=\"stylesheet\" href=\"/css/style.css\">" CRLF
                 "</head>" CRLF
                 "<body>" CRLF
