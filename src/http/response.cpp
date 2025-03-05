@@ -1,12 +1,13 @@
 #include <fstream>
 #include <filesystem>
 
+#include "config.hpp"
 #include "http/response.hpp"
 namespace fs = std::filesystem;
 
 
 namespace http::response {
-    static void make_status_line(Buffer& buffer, StatusCode code) noexcept {
+    static void make_status_line(GrowableBuffer& buffer, StatusCode code) noexcept {
         buffer.write(
             "HTTP/1.1 {} {}" CRLF,
             std::to_string(magic_enum::enum_integer(code)),
@@ -14,7 +15,7 @@ namespace http::response {
         );
     }
 
-    static void make_keep_alive_header(Buffer& buf, bool keep_alive) noexcept {
+    static void make_keep_alive_header(GrowableBuffer& buf, bool keep_alive) noexcept {
         if (keep_alive) {
             constexpr auto timeout = CONNECTION_TIMEOUT / 1000;
             buf.write("Connection: keep-alive" CRLF);
@@ -24,7 +25,7 @@ namespace http::response {
         }
     }
 
-    asyncio::Task<> make_response_error_text(asyncio::Socket &sock, Buffer &buf, std::string_view text) noexcept {
+    asyncio::Task<> make_response_error_text(asyncio::Socket &sock, GrowableBuffer &buf, std::string_view text) noexcept {
         make_status_line(buf, StatusCode::BAD_REQUEST);
         make_keep_alive_header(buf, true);
         buf.write("Content-Type: text/plain; charset=utf-8" CRLF);
@@ -34,7 +35,7 @@ namespace http::response {
         co_await sock.write(data.data(), data.size());
     }
 
-    asyncio::Task<> make_response_json(asyncio::Socket &sock, Buffer &buf, std::string_view error_msg) noexcept {
+    asyncio::Task<> make_response_json(asyncio::Socket &sock, GrowableBuffer &buf, std::string_view error_msg) noexcept {
         make_status_line(buf, StatusCode::OK);
         make_keep_alive_header(buf, true);
         auto content = "{" + std::format("\"status\": {}, \"error_msg\": \"{}\"", (int)!error_msg.empty(), error_msg) + "}";
@@ -47,7 +48,7 @@ namespace http::response {
 
     asyncio::Task<> make_response_get_file(
         asyncio::Socket& sock,
-        Buffer& buf,
+        GrowableBuffer& buf,
         std::string_view file,
         StatusCode code
     ) noexcept {
@@ -77,7 +78,7 @@ namespace http::response {
 
     asyncio::Task<> make_response_list_dir(
         asyncio::Socket& sock,
-        Buffer &buf,
+        GrowableBuffer &buf,
         std::string_view dir
     ) noexcept {
         make_status_line(buf, StatusCode::OK);
@@ -154,7 +155,7 @@ namespace http::response {
         co_await sock.write(data.data(), data.size());
     }
 
-    asyncio::Task<> make_response_download_file(asyncio::Socket& sock, Buffer &buf, std::string_view file) noexcept {
+    asyncio::Task<> make_response_download_file(asyncio::Socket& sock, GrowableBuffer &buf, std::string_view file) noexcept {
         auto file_size = fs::file_size(file);
         make_status_line(buf, StatusCode::OK);
         make_keep_alive_header(buf, true);

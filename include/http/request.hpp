@@ -6,7 +6,7 @@
 #include <magic_enum/magic_enum.hpp>
 
 #include "types.hpp"
-#include "buffer.hpp"
+#include "growable_buffer.hpp"
 using namespace kwa;
 
 
@@ -47,7 +47,7 @@ namespace http::request {
             asyncio::Task<> handle_request(request::Request&, std::string_view) noexcept;
         private:
             asyncio::Socket& _sock;
-            Buffer _buffer {};
+            GrowableBuffer _buffer {};
             asyncio::Task<> _handle_get(const request::Request&) noexcept;
             asyncio::Task<> _handle_post(request::Request&, std::string_view) noexcept;
     };
@@ -73,7 +73,7 @@ namespace http::request {
                 BODY,
             };
 
-            Buffer _buffer {};
+            GrowableBuffer _buffer {};
             Request _data {};
             State _state { State::REQUEST_LINE };
             std::string _incomplete_line {};

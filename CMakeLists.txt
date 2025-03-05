@@ -35,11 +35,16 @@ FetchContent_Declare(
     GIT_TAG master
 )
 FetchContent_Declare(
+    growable_buffer
+    GIT_REPOSITORY "https://github.com/kewuaa/growable_buffer.git"
+    GIT_TAG master
+)
+FetchContent_Declare(
     magic_enum
     GIT_REPOSITORY "https://github.com/Neargye/magic_enum.git"
     GIT_TAG "v0.9.7"
 )
-FetchContent_MakeAvailable(asyncio magic_enum)
+FetchContent_MakeAvailable(asyncio growable_buffer magic_enum)
 
 FIND_PACKAGE(spdlog REQUIRED)
 
@@ -49,7 +54,6 @@ ADD_EXECUTABLE(webserver)
 TARGET_SOURCES(
     webserver
     PRIVATE
-        src/buffer.cpp
         src/http/request.cpp
         src/http/request/parser.cpp
         src/http/request/handler.cpp
@@ -69,6 +73,7 @@ TARGET_LINK_LIBRARIES(
     PRIVATE
         spdlog::spdlog
         asyncio
+        growable_buffer
         magic_enum
 )
 TARGET_COMPILE_DEFINITIONS(
