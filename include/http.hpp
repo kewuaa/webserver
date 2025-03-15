@@ -10,5 +10,7 @@ using namespace kwa;
 
 
 namespace http {
-    asyncio::Task<> init_connection(int conn) noexcept;
+
+asyncio::Task<> init_connection(int conn) noexcept;
+
 }
