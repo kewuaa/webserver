@@ -1,33 +1,33 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
+cmake_minimum_required(VERSION 3.15)
 
-PROJECT(
+project(
     webserver
     LANGUAGES CXX
 )
 
-SET(CMAKE_CXX_STANDARD 23)
-SET(CMAKE_EXPORT_COMPILE_COMMANDS on)
-SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb")
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_EXPORT_COMPILE_COMMANDS on)
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb")
 
-SET(BUILD_TESTS TRUE CACHE BOOL "if to build tests")
+set(BUILD_TESTS TRUE CACHE BOOL "if to build tests")
 
-SET(BUFFER_SIZE 1024 CACHE STRING "size of buffer")
-SET(MAX_DATA_SEND_ONCE 2048 CACHE STRING "max data size could send once")
-SET(CONNECTION_TIMEOUT 300000 CACHE STRING "timeout for connection to close(milliseconds)")
+set(BUFFER_SIZE 1024 CACHE STRING "size of buffer")
+set(MAX_DATA_SEND_ONCE 2048 CACHE STRING "max data size could send once")
+set(CONNECTION_TIMEOUT 300000 CACHE STRING "timeout for connection to close(milliseconds)")
 
 if (NOT CMAKE_BUILD_TYPE)
-    SET(CMAKE_BUILD_TYPE Debug)
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
-    ADD_DEFINITIONS("-D_DEBUG")
+    add_definitions("-D_DEBUG")
 endif()
 
 if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    SET(BUILD_TESTS FALSE)
+    set(BUILD_TESTS FALSE)
 endif()
 
-INCLUDE(FetchContent)
+include(FetchContent)
 
 FetchContent_Declare(
     asyncio
@@ -46,12 +46,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(asyncio growable_buffer magic_enum)
 
-FIND_PACKAGE(spdlog REQUIRED)
+find_package(spdlog REQUIRED)
 
-CONFIGURE_FILE(include/config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/config.hpp)
+configure_file(include/config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/config.hpp)
 
-ADD_EXECUTABLE(webserver)
-TARGET_SOURCES(
+add_executable(webserver)
+target_sources(
     webserver
     PRIVATE
         src/http/request.cpp
@@ -62,13 +62,13 @@ TARGET_SOURCES(
         src/webserver.cpp
         src/main.cpp
 )
-TARGET_INCLUDE_DIRECTORIES(
+target_include_directories(
     webserver
     PRIVATE
         include
         ${CMAKE_CURRENT_BINARY_DIR}/include
 )
-TARGET_LINK_LIBRARIES(
+target_link_libraries(
     webserver
     PRIVATE
         spdlog::spdlog
@@ -76,12 +76,12 @@ TARGET_LINK_LIBRARIES(
         growable_buffer
         magic_enum
 )
-TARGET_COMPILE_DEFINITIONS(
+target_compile_definitions(
     webserver
     PRIVATE RESOURCE_ROOT_DIR="${CMAKE_SOURCE_DIR}/resources"
 )
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
-    TARGET_COMPILE_DEFINITIONS(
+    target_compile_definitions(
         webserver
         PRIVATE SPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG
     )
@@ -94,6 +94,6 @@ if (BUILD_TESTS)
         GIT_TAG master
     )
     FetchContent_MakeAvailable(ut)
-    ENABLE_TESTING()
-    ADD_SUBDIRECTORY(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
