@@ -27,24 +27,20 @@ if (NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(BUILD_TESTS FALSE)
 endif()
 
-include(FetchContent)
+include(cmake/CPM.cmake)
 
-FetchContent_Declare(
-    asyncio
+CPMAddPackage(
+    NAME asyncio
     GIT_REPOSITORY "https://github.com/kewuaa/asyncio.git"
     GIT_TAG master
+    OPTIONS "BUILD_TESTS FALSE BUILD_ECHO FALSE"
 )
-FetchContent_Declare(
-    growable_buffer
+CPMAddPackage(
+    NAME growable_buffer
     GIT_REPOSITORY "https://github.com/kewuaa/growable_buffer.git"
     GIT_TAG master
 )
-FetchContent_Declare(
-    magic_enum
-    GIT_REPOSITORY "https://github.com/Neargye/magic_enum.git"
-    GIT_TAG "v0.9.7"
-)
-FetchContent_MakeAvailable(asyncio growable_buffer magic_enum)
+CPMAddPackage("gh:Neargye/magic_enum#v0.9.7")
 
 find_package(spdlog REQUIRED)
 
@@ -88,11 +84,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
 endif()
 
 if (BUILD_TESTS)
-    FetchContent_Declare(
-        ut
-        GIT_REPOSITORY "https://github.com/boost-ext/ut.git"
-        GIT_TAG master
-    )
+    CPMAddPackage("gh:boost-ext/ut@v2.3.1")
     FetchContent_MakeAvailable(ut)
     enable_testing()
     add_subdirectory(tests)
