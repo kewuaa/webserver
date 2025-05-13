@@ -85,7 +85,6 @@ endif()
 
 if (BUILD_TESTS)
     CPMAddPackage("gh:boost-ext/ut@v2.3.1")
-    FetchContent_MakeAvailable(ut)
     enable_testing()
     add_subdirectory(tests)
 endif()
