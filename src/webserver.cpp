@@ -2,20 +2,23 @@
 #include "http.hpp"
 
 
-asyncio::Result<> WebServer::init(
+void WebServer::init(
     const char* host,
     short port,
     int max_listen_num
 ) noexcept {
     auto res = _sock.bind(host, port);
-    if (!res) {
-        return asyncio::Error(std::move(res.error()));
+    if (res == -1) {
+        SPDLOG_ERROR("failed to bind to {}:{}", host, port);
+        exit(EXIT_FAILURE);
     }
+    SPDLOG_INFO("successfully bind to {}:{}", host, port);
     res = _sock.listen(max_listen_num);
-    if (!res) {
-        return asyncio::Error(std::move(res.error()));
+    if (res == -1) {
+        SPDLOG_ERROR("failed to starting listening");
+        exit(EXIT_FAILURE);
     }
-    return {};
+    SPDLOG_INFO("start listening, max listen number: {}", max_listen_num);
 }
 
 

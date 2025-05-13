@@ -12,6 +12,6 @@ public:
     WebServer(WebServer&&) = delete;
     WebServer& operator=(WebServer&) = delete;
     WebServer& operator=(WebServer&&) = delete;
-    asyncio::Result<> init(const char* host, short port, int max_listen_num) noexcept;
+    void init(const char* host, short port, int max_listen_num) noexcept;
     asyncio::Task<> run() noexcept;
 };
