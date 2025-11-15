@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(
-    webserver
-    LANGUAGES CXX
-)
+project(webserver LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
@@ -29,20 +26,14 @@ endif()
 
 include(cmake/CPM.cmake)
 
-CPMAddPackage(
-    NAME asyncio
-    GIT_REPOSITORY "https://github.com/kewuaa/asyncio.git"
-    GIT_TAG master
-    OPTIONS "BUILD_TESTS FALSE BUILD_ECHO FALSE"
-)
-CPMAddPackage(
-    NAME growable_buffer
-    GIT_REPOSITORY "https://github.com/kewuaa/growable_buffer.git"
-    GIT_TAG master
-)
-CPMAddPackage("gh:Neargye/magic_enum#v0.9.7")
+add_subdirectory(asyncio)
+add_subdirectory(growable_buffer)
 
-find_package(spdlog REQUIRED)
+CPMAddPackage("gh:Neargye/magic_enum#v0.9.7")
+CPMAddPackage(
+    URI "gh:gabime/spdlog@1.16.0"
+    OPTIONS "SPDLOG_USE_STD_FORMAT TRUE"
+)
 
 configure_file(include/config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/config.hpp)
 
